@@ -4,26 +4,67 @@ import com.example.CustomUtils
 def imageName = "cloudsheger/simple-java-app:${env.BUILD_NUMBER}"
 def dockerPort = 8082
 
-node {
-    buildDocker()
+pipeline {
+    agent any
 
-    scanDockerImage(imageName)
-
-    deployDockerImage(imageName, dockerPort)
-
-    stage('Send Slack Alert') {
-        when {
-            expression { currentBuild.resultIsBetterOrEqualTo('FAILURE') }
-        }
-        steps {
-            slackSend(
-                color: 'danger',
-                channel: '#devsecops-build-status',
-                message: "Build failed: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}\n${env.BUILD_URL}",
-                tokenCredentialId: 'slack-token'
-            )
-        }
+    environment {
+        CUSTOM_IMAGE_NAME = imageName
+        DOCKER_PORT = dockerPort.toString()
     }
 
-    CustomUtils.cleanupDockerImages()
+    stages {
+        stage('docker build') {
+            steps {
+                script {
+                    // Call the buildDocker() function from your shared library
+                    def buildResult = buildDocker()
+
+                    if (buildResult == 'SUCCESS') {
+                        echo 'Docker build successful'
+                    } else {
+                        error 'Docker build failed'
+                    }
+                }
+            }
+        }
+
+        stage('scan Docker image') {
+            steps {
+                script {
+                    // Call the scanDockerImage() function from your shared library
+                    def scanResult = scanDockerImage(env.CUSTOM_IMAGE_NAME)
+
+                    if (scanResult == 'SUCCESS') {
+                        echo 'Docker image scanned successfully'
+                    } else {
+                        error 'Docker image scan failed'
+                    }
+                }
+            }
+        }
+
+        stage('deploy Docker image') {
+            steps {
+                script {
+                    // Call the deployDockerImage() function from your shared library
+                    def deployResult = deployDockerImage(env.CUSTOM_IMAGE_NAME, env.DOCKER_PORT.toInteger())
+
+                    if (deployResult == 'SUCCESS') {
+                        echo 'Docker image deployed successfully'
+                    } else {
+                        error 'Docker image deployment failed'
+                    }
+                }
+            }
+        }
+
+        stage('cleanup Docker images') {
+            steps {
+                script {
+                    // Call the cleanupDockerImages() function from your shared library
+                    CustomUtils.cleanupDockerImages()
+                }
+            }
+        }
+    }
 }

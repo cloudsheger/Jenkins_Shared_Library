@@ -1,15 +1,12 @@
 @Library('my-shared-library') _
 import com.example.CustomUtils
 
-def imageName = "cloudsheger/simple-java-app:${env.BUILD_NUMBER}"
-def dockerPort = 8082
-
 pipeline {
     agent any
 
     environment {
-        CUSTOM_IMAGE_NAME = imageName
-        DOCKER_PORT = dockerPort.toString()
+        CUSTOM_IMAGE_NAME = "cloudsheger/simple-java-app:${env.BUILD_NUMBER}"
+        DOCKER_PORT = "8082"
     }
 
     stages {

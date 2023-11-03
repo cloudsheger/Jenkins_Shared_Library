@@ -1,4 +1,6 @@
 // vars/sonarScanPipeline.groovy
+import utils.parameters 
+// Import utility scripts from the src directory
 
 def call(Map params) {
     def sonarParams = utils.parameters.getSonarParameters(params)

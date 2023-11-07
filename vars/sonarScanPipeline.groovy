@@ -1,12 +1,25 @@
-// vars/sonarScanPipeline.groovy
-// Import utility scripts from the src directory
-
 def call(Map params) {
-    //def sonarParams = utils.parameters.getSonarParameters(params)
-                    // Maven build and SonarQube scan command using sonarParams
-                    sh "mvn -Dmaven.test.failure.ignore=true -Dcheckstyle.skip sonar:sonar \
-                      -Dsonar.projectKey=${params.SONAR_PROJECT_KEY} \
-                      -Dsonar.projectName='${params.SONAR_PROJECT_NAME}' \
-                      -Dsonar.host.url=${params.SONAR_HOST_URL} \
-                      -Dsonar.token=${params.SONAR_TOKEN}"
+    def projectKey = params.projectKey ?: error "Project key is required"
+    def projectName = params.projectName ?: error "Project name is required"
+    def sonarHostUrl = params.sonarHostUrl ?: error "SonarQube server URL is required"
+    def sonarToken = params.sonarToken ?: error "SonarQube token is required"
+
+    pipeline {
+        agent any
+        stages {
+            stage('Sonar Static Code Analysis') {
+                steps {
+                    script {
+                        echo "Running SonarQube scan for project: ${projectName}"
+                        sh "mvn clean verify sonar:sonar \
+                            -Dsonar.projectKey=${projectKey} \
+                            -Dsonar.projectName='${projectName}' \
+                            -Dsonar.host.url=${sonarHostUrl} \
+                            -Dsonar.login=${sonarToken}"
+                    }
+                }
+            }
+        }
+    }
 }
+

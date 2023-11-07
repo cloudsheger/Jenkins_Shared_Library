@@ -1,8 +1,8 @@
 def call(Map params) {
-    def projectKey = params.projectKey ?: error "Project key is required"
-    def projectName = params.projectName ?: error "Project name is required"
-    def sonarHostUrl = params.sonarHostUrl ?: error "SonarQube server URL is required"
-    def sonarToken = params.sonarToken ?: error "SonarQube token is required"
+    def projectKey = params.projectKey ?: 'shared-lib'
+    def projectName = params.projectName ?: 'shared-lib'
+    def sonarHostUrl = params.sonarHostUrl ?: 'http://localhost:9000'
+    def sonarToken = params.sonarToken ?: 'deafult sonar token required'
 
     pipeline {
         agent any

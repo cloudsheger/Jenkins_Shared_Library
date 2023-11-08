@@ -9,7 +9,7 @@ def call(Map params) {
   withSonarQubeEnv('SonarScanner') {
     sh('mvn sonar:sonar \
        -Dsonar.projectKey=${projectKey} \
-       -Dsonar.projectName='${projectName}' \
+       -Dsonar.projectName=${projectName} \
        -Dsonar.host.url=${sonarHostUrl} \
        -Dsonar.login=${sonarToken}')
     }

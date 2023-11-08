@@ -5,13 +5,13 @@ def call(Map params) {
     def sonarToken = params.sonarToken ?: 'deafult sonar token required'
 
   echo "Running SonarQube scan for project: ${projectName}"
-  
+
   withSonarQubeEnv('SonarScanner') {
-    sh "mvn sonar:sonar \
+    sh('mvn sonar:sonar \
        -Dsonar.projectKey=${projectKey} \
        -Dsonar.projectName='${projectName}' \
        -Dsonar.host.url=${sonarHostUrl} \
-       -Dsonar.login=${sonarToken}"
+       -Dsonar.login=${sonarToken}')
     }
 }
 

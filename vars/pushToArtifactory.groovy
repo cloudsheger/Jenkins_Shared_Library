@@ -7,7 +7,7 @@ def call(Map config) {
     def credentialsId = credentials(config.ARTIFACTORY_CREDENTIALS_ID)
 
     // Push Docker image to Artifactory using docker.withRegistry
-    docker.withRegistry("https://${config.DOCKER_REGISTRY}", credentialsId) {
+    docker.withRegistry("https://${config.DOCKER_REGISTRY}", 'credentialsId') {
         sh "docker push ${dockerImage}"
     }
 }

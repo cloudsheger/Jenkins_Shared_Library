@@ -2,10 +2,10 @@
 
 def call(Map params) {
     // Set default values for the variables if not provided
-    def dockerRegistry = params.DOCKER_REGISTRY ?: 'cloudsheger.jfrog.io'
-    def dockerRepo = params.DOCKER_REPO ?: 'docker'
-    def imageName = params.IMAGE_NAME ?: 'petclinic'
-    def credentialsId = params.ARTIFACTORY_CREDENTIALS_ID ?: 'default-artifactory-credentials'
+    def dockerRegistry = params.dockerRegistry ?: 'cloudsheger.jfrog.io'
+    def dockerRepo = params.dockerRepo ?: 'docker'
+    def imageName = params.imageName ?: 'petclinic'
+    def credentialsId = params.credentialsId ?: 'default-artifactory-credentials'
 
     if (!dockerRegistry || !dockerRepo || !imageName || !credentialsId) {
         error "Missing required configuration parameters for Docker image."

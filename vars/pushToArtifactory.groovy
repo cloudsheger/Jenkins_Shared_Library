@@ -1,27 +1,29 @@
 // vars/pushToArtifactory.groovy
 
-def buildAndPushImage(Map config, String tagName) {
-    if (!config.DOCKER_REGISTRY || !config.DOCKER_REPO || !config.IMAGE_NAME || !config.ARTIFACTORY_CREDENTIALS_ID) {
+def call(Map params) {
+    // Set default values for the variables if not provided
+    def dockerRegistry = params.DOCKER_REGISTRY ?: 'cloudsheger.jfrog.io'
+    def dockerRepo = params.DOCKER_REPO ?: 'docker'
+    def imageName = params.IMAGE_NAME ?: 'petclinic'
+    def credentialsId = params.ARTIFACTORY_CREDENTIALS_ID ?: 'default-artifactory-credentials'
+
+    if (!dockerRegistry || !dockerRepo || !imageName || !credentialsId) {
         error "Missing required configuration parameters for Docker image."
     }
 
-    def dockerImage = "${config.DOCKER_REGISTRY}/${config.DOCKER_REPO}/${config.IMAGE_NAME}:${tagName}"
+    def tagName = 'latest'
+    def dockerImage = "${dockerRegistry}/${dockerRepo}/${imageName}:${tagName}"
 
     // Pull Docker image from Artifactory using docker.withRegistry
-    docker.withRegistry("https://${config.DOCKER_REGISTRY}", config.ARTIFACTORY_CREDENTIALS_ID) {
+    docker.withRegistry("https://${dockerRegistry}", credentialsId) {
         sh "docker pull ${dockerImage}"
     }
 
     // Build Docker image using cache
-    sh "docker build --cache-from=${dockerImage} -t ${config.IMAGE_NAME}:${tagName} ."
+    sh "docker build --cache-from=${dockerImage} -t ${imageName}:${tagName} ."
 
     // Push Docker image to Artifactory using docker.withRegistry
-    docker.withRegistry("https://${config.DOCKER_REGISTRY}", config.ARTIFACTORY_CREDENTIALS_ID) {
+    docker.withRegistry("https://${dockerRegistry}", credentialsId) {
         sh "docker push ${dockerImage}"
     }
-}
-
-def call(Map config) {
-    buildAndPushImage(config, 'latest')
-    buildAndPushImage(config, config.BUILD_NUMBER)
 }

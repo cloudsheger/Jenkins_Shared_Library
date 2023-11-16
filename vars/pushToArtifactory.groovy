@@ -1,6 +1,10 @@
 // vars/pushToArtifactory.groovy
 
 def buildAndPushImage(Map config, String tagName) {
+    if (!config.DOCKER_REGISTRY || !config.DOCKER_REPO || !config.IMAGE_NAME || !config.ARTIFACTORY_CREDENTIALS_ID) {
+        error "Missing required configuration parameters for Docker image."
+    }
+
     def dockerImage = "${config.DOCKER_REGISTRY}/${config.DOCKER_REPO}/${config.IMAGE_NAME}:${tagName}"
 
     // Pull Docker image from Artifactory using docker.withRegistry

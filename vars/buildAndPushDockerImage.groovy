@@ -8,7 +8,7 @@ def call(Map config) {
     // Use Artifactory API key credentials
     withCredentials([string(credentialsId: config.ARTIFACTORY_API_KEY_CREDENTIALS_ID, variable: "artifactoryApiKey")]) {
         sh "docker build -f docker/Dockerfile -t ${imageName} ."
-        sh "docker login -u _ -p ${artifactoryApiKey} ${config.DOCKER_REGISTRY}"
+        sh "echo ${artifactoryApiToken} | docker login -u _ --password-stdin ${config.DOCKER_REGISTRY}"
         sh "docker push ${imageName}"
     }
 }

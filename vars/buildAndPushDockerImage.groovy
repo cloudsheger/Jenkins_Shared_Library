@@ -5,10 +5,10 @@ def call(Map config) {
 
     echo "Building Docker image..."
 
-    // Use Artifactory credentials
-    withCredentials([string(credentialsId: config.ARTIFACTORY_CREDENTIALS_ID, variable: "artifactoryCredentials")]) {
-        sh "docker build -f docker/Dockerfile -t $imageName ."
-        sh "docker login -u ${artifactoryCredentials_usr} -p ${artifactoryCredentials_pwd} ${config.DOCKER_REGISTRY}"
-        sh "docker push $imageName"
+    // Use Artifactory API key credentials
+    withCredentials([string(credentialsId: config.ARTIFACTORY_API_KEY_CREDENTIALS_ID, variable: "artifactoryApiKey")]) {
+        sh "docker build -f docker/Dockerfile -t ${imageName} ."
+        sh "docker login -u _ -p ${artifactoryApiKey} ${config.DOCKER_REGISTRY}"
+        sh "docker push ${imageName}"
     }
 }

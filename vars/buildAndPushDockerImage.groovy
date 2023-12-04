@@ -6,7 +6,7 @@ def call(Map config) {
     echo "Building Docker image..."
 
     // Use Docker Pipeline plugin to authenticate with Docker registry
-    docker.withRegistry(config.DOCKER_REGISTRY, config.DOCKER_CREDS_ID) {
+    docker.withRegistry(config.DOCKER_REGISTRY_URL, config.DOCKER_CREDS_ID) {
         sh "docker build -f docker/Dockerfile -t ${imageName} ."
         sh "docker push ${imageName}"
     }
